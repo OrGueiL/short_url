@@ -28,7 +28,7 @@ def index():
 
 			url = str(request.form.get('url'))
 			record_url(url)
-
+			
 		else:
 			texte ="Entrez l'URL à raccourcir"
 			return render_template('index.html', titre="Raccourcisseur d'URL !", texte=mots)
