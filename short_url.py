@@ -1,4 +1,5 @@
-#!/usr/bin/python3
+#!/usr/bin/python
+# -*- coding: iso-8859-15 -*-
 
 ################### URL SHORTENER ###################
 ## receive URL                                     ##
