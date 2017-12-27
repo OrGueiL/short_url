@@ -27,7 +27,6 @@ def index():
 	    if request.method == 'POST':
 
 			url = str(request.form.get('url'))
-
 			record_url(url)
 
 		else:
