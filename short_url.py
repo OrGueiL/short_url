@@ -64,6 +64,9 @@ def record_url(url=''):
     
     key = key_gen()
     
+    if not 'http://' or not 'https://' in url:
+        url =  'http://' + url
+
     url_list = open(db,'a')
     data_record = key + '|' + url + '\n'
     url_list.write(data_record)
@@ -82,7 +85,7 @@ def find_url(key='None'):
         line = line.split('|')
 
         if key == line[0]:
-            url = line[1][:-2]
+            url = line[1][:-1] #delete the eof /n
 
     db_list.close()
 
