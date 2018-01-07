@@ -14,7 +14,7 @@ import random
 import string
 
 db = "url_list.db" # the DB file
-domain = "http://163.172.82.76/" # domain for short url
+domain = "http://163.172.82.76:5000/" # domain for short url
 
 app =  Flask(__name__)
 app.secret_key = 'secret_key' #needed for flash
