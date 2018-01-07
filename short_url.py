@@ -9,14 +9,16 @@
 ## record in db                                    ##
 #####################################################
 
-from flask import Flask, request, redirect, flash
+from flask import Flask, request, redirect, flash, render_template, url_for
 import random
 import string
 
-db = "url_list.db"
-app.secret_key = 'secret_key' #needed for flash
+db = "url_list.db" # the DB file
+domain = "http://127.0.0.1/" # domain for short url
 
 app =  Flask(__name__)
+app.secret_key = 'secret_key' #needed for flash
+
 
 ############################
 ########### Pages ##########
@@ -28,22 +30,25 @@ def index():
         if request.method == 'POST':
 
             url = str(request.form.get('url'))
-            record_url(url)
+            return record_url(url)
             
         else:
             texte ="Entrez l'URL à raccourcir"
-            return render_template('index.html', titre="Raccourcisseur d'URL !", texte=mots)
+            return render_template('index.html', titre="Raccourcisseur d'URL !", texte=texte)
 
 # result page to show the short url
 @app.route('/short/')
 def short():
     url = request.args.get('url')
-    return render_template('short.html', url=url)
+    short_url = request.args.get('short_url')
+    return render_template('short.html', short_url= short_url, url=url)
 
 # redirect to the real url
 @app.route('/<key>/')
 def redirect_url(key):
-    find_url(key)
+    url = find_url(key)
+    print(url)
+    return redirect(url, code=302)
 
 @app.errorhandler(404)
 def error404(error):
@@ -54,20 +59,20 @@ def error404(error):
 ######### Functions ##########
 ##############################
 
-def record_url(url):
+def record_url(url=''):
     # Open db file and add key + url
     # record with format: key|URL
     
     key = key_gen()
-    url_list = open(db,'w')
-    short_url = key + '|' + url
-    url_list.write(short_url)
+    url_list = open(db,'a')
+    data_record = key + '|' + url + '\n'
+    url_list.write(data_record)
 
-    return redirect(url_for('short', url=short_url))
+    return redirect(url_for('short', short_url=domain + key,  url=url ))
 
 
 
-def find_url(key):
+def find_url(key='None'):
     # find an URL from a key
 
     db_list = open(db,'r')
@@ -76,22 +81,23 @@ def find_url(key):
     for line in db_list:
         line = line.split('|')
 
-        if key == db_list[0]:
-            url = db_list[1]
+        if key == line[0]:
+            url = line[1][:-2]
 
-        if not url:
-            return redirect(url_for('error404')) # flask function to redirect to URL
-        else:
-            return redirect(url) # flask function to redirect to URL
+    db_list.close()
+
+    if not url:
+        return redirect(url_for('error404')) # flask function to redirect to URL
+    else:
+        return url # flask function to redirect to URL
 
 
 def key_gen():
     # Generate a random key 
     # Check if the key already exist
-    key = random.choice(string.ascii_letters,k=6)
+    key = ''.join(random.choice(string.ascii_letters) for n in range(6))
 
     url_list = open(db,'r')
-
 
     for key_list in url_list:
         key_list = key_list.split('|')
@@ -99,7 +105,9 @@ def key_gen():
         if key == key_list[0]:
             key_gen()
         
-        return key
+    url_list.close()
+
+    return str(key)
 
 
 if __name__ == '__main__':
