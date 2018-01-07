@@ -63,8 +63,8 @@ def record_url(url=''):
     # record with format: key|URL
     
     key = key_gen()
-    
-    if not 'http://' or not 'https://' in url:
+
+    if 'http://' not in url and 'https://' not in url:
         url =  'http://' + url
 
     url_list = open(db,'a')
